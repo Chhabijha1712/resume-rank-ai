@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered Resume Parser & Ranker — Upload resumes, extract key information using NLP, and rank candidates against company requirements.">
+  <title>ResumeRank AI — Smart Resume Parser & Candidate Ranker</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- PDF.js and Mammoth.js loaded from CDN — need internet connection for PDF/DOCX support -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" onerror="window.__pdfjs_failed=true"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js" onerror="window.__mammoth_failed=true"></script>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <div class="nav-brand">
+        <svg viewBox="0 0 32 32" fill="none">
+          <rect width="32" height="32" rx="8" fill="url(#grad)"/>
+          <path d="M10 22V10h4l4 6 4-6h0v12" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <defs><linearGradient id="grad" x1="0" y1="0" x2="32" y2="32"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+        </svg>
+        ResumeRank AI
+      </div>
+      <ul class="nav-links">
+        <li><a href="#upload" class="active">Upload</a></li>
+        <li><a href="#requirements">Requirements</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#rankings">Rankings</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        NLP-Powered Resume Analysis
+      </div>
+      <h1>Parse. Analyze. <span class="gradient-text">Rank.</span></h1>
+      <p class="hero-subtitle">
+        Upload resumes, extract structured data with NLP, and instantly rank candidates against company-specific job requirements using intelligent scoring.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="stat-number" id="stat-resumes">0</div>
+          <div class="stat-label">Resumes Parsed</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-number" id="stat-skills">200+</div>
+          <div class="stat-label">Skills Detected</div>
+        </div>
+        <div class="hero-stat">
+          <div class="stat-number" id="stat-companies">6</div>
+          <div class="stat-label">Company Profiles</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upload Section -->
+  <section id="upload">
+    <div class="container">
+      <div class="section-header">
+        <h2>📄 Upload Resumes</h2>
+        <p>Drag & drop or browse to upload candidate resumes for NLP analysis</p>
+      </div>
+      <div class="glass-card">
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">📁</div>
+          <h3>Drop resumes here</h3>
+          <p>or <span class="browse-btn" id="browse-btn">browse files</span> from your computer</p>
+          <div class="upload-formats" id="upload-formats">
+            <span class="format-badge">.PDF</span>
+            <span class="format-badge">.DOCX</span>
+            <span class="format-badge">.TXT</span>
+          </div>
+          <input type="file" id="file-input" multiple accept=".pdf,.docx,.txt" style="display:none">
+        </div>
+        <div class="file-list" id="file-list"></div>
+        <div id="lib-warning" style="display:none; margin-top:1rem; padding:0.75rem 1rem; background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:10px; font-size:0.85rem; color:#fbbf24;">
+          ⚠️ <strong>PDF/DOCX support requires internet.</strong> If you opened this file locally without internet, you can still upload <strong>.TXT</strong> resumes. For full format support, host the app on a web server or use GitHub Pages.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Job Requirements Section -->
+  <section id="requirements">
+    <div class="container">
+      <div class="section-header">
+        <h2>🏢 Job Requirements</h2>
+        <p>Select a company profile or define custom requirements to rank against</p>
+      </div>
+      <div class="glass-card">
+        <div class="requirements-grid">
+          <div>
+            <h3 style="font-size:1rem; margin-bottom:var(--space-md); color:var(--text-secondary);">Select Company</h3>
+            <div class="company-selector" id="company-selector"></div>
+          </div>
+          <div>
+            <h3 style="font-size:1rem; margin-bottom:var(--space-md); color:var(--text-secondary);">Job Details</h3>
+            <div class="custom-requirements">
+              <div class="form-group">
+                <label for="job-title">Job Title</label>
+                <input type="text" id="job-title" placeholder="e.g., Senior Frontend Engineer">
+              </div>
+              <div class="form-group">
+                <label for="job-description">Job Description</label>
+                <textarea id="job-description" placeholder="Describe key responsibilities and qualifications..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Required Skills</label>
+                <div class="skill-tags-container" id="skill-tags-container">
+                  <input type="text" class="skill-tags-input" id="skill-tags-input" placeholder="Type a skill and press Enter...">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="min-experience">Minimum Experience (years)</label>
+                <input type="number" id="min-experience" min="0" max="30" value="2">
+              </div>
+              <div class="form-group">
+                <label for="education-level">Education Level</label>
+                <select id="education-level">
+                  <option value="any">Any</option>
+                  <option value="bachelors" selected>Bachelor's Degree</option>
+                  <option value="masters">Master's Degree</option>
+                  <option value="phd">PhD</option>
+                </select>
+              </div>
+              <button class="btn btn-primary btn-lg btn-block" id="rank-btn" disabled>
+                🚀 Rank Candidates
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Parsed Results Section -->
+  <section id="results">
+    <div class="container">
+      <div class="section-header">
+        <h2>🔍 Parsed Resumes</h2>
+        <p>Structured data extracted from uploaded resumes using NLP</p>
+      </div>
+      <div id="results-content">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <h3>No resumes parsed yet</h3>
+          <p>Upload resumes above to see extracted information here</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rankings Section -->
+  <section id="rankings">
+    <div class="container">
+      <div class="section-header">
+        <h2>🏆 Candidate Rankings</h2>
+        <p>Candidates ranked by composite score against job requirements</p>
+      </div>
+      <div id="rankings-content">
+        <div class="empty-state">
+          <div class="empty-icon">📊</div>
+          <h3>No rankings yet</h3>
+          <p>Upload resumes and set job requirements to generate rankings</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>ResumeRank AI — NLP-Powered Resume Parser & Candidate Ranker &copy; 2026</p>
+    </div>
+  </footer>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/companies.js"></script>
+  <script src="js/nlp.js"></script>
+  <script src="js/parser.js"></script>
+  <script src="js/ranker.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

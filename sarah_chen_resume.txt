@@ -1,0 +1,32 @@
+Sarah Chen
+Frontend Engineer
+
+Email: sarah.chen@gmail.com
+Phone: (555) 987-6543
+LinkedIn: linkedin.com/in/sarahchen
+
+Summary
+Creative Frontend Engineer with 4 years of experience crafting beautiful, performant user interfaces. Deeply skilled in React, TypeScript, and modern CSS.
+
+Technical Skills
+Languages: JavaScript, TypeScript, HTML, CSS, Python
+Frontend: React, Next.js, Vue, Redux, Svelte
+Styling: Sass, Tailwind, Bootstrap, Figma
+Testing: Jest, Cypress, Playwright
+Tools: Git, GitHub, webpack, Vite, REST API, GraphQL
+Practices: Agile, Scrum, TDD, Design Patterns, PWA
+
+Work Experience
+Frontend Engineer — DesignHub Technologies
+2022 - Present
+- Led development of component library used across 12 products
+
+Junior Frontend Developer — WebCraft Studios
+2020 - 2022
+- Built responsive SPAs using React and TypeScript
+
+Education
+Bachelor of Science in Information Technology — MIT, 2020
+
+Certifications
+- Google Certified Professional Cloud Developer
